@@ -1,0 +1,3 @@
+python-dotenv
+nbformat==5.10.4
+flask==2.2.3
