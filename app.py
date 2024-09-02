@@ -63,6 +63,8 @@ def update_graph(activity):
         zoom=8.5,
         color = 'activity_type',
         center={"lat": -33.55, "lon": -70.60},
+        width = 1800,
+        height = 800
         )
     fig.update_layout(
         mapbox_style="open-street-map",
