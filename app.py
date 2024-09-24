@@ -42,6 +42,8 @@ app.layout = [
     dcc.Graph(id='graph-content')
 ]
 
+app._favicon = "favicon.ico"
+
 @callback(
     Output('graph-content', 'figure'),
     Input('dropdown-multi-selection', 'value'), 
