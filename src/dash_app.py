@@ -53,4 +53,4 @@ class StravaActivitiesApp:
 
     def run(self): 
 
-        self.app.run(debug=True) 
+        self.app.run(debug=False) 
