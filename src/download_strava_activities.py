@@ -15,16 +15,16 @@ def download_strava_activities(client, data_path):
     for a in activities: 
         id = a.id
         activity_name = a.name
-        activity_type = a.type
+        activity_type = a.type.root
         start_date_date = a.start_date
         start_date_str = start_date_date.strftime("%Y%m%d")
         distance = f"{float(a.distance)/1000:.2f}K"
 
         csv_name = f"{activity_name}__{start_date_str}.csv" 
+        print(f"Activity: {activity_name}, Type: {activity_type}")
 
         if (activity_type not in ["WeightTraining", "Workout", "VirtualRide", "Treadmill"]) and (csv_name not in already_read_files): 
             
-            print(f"Activity: {activity_name}, Type: {activity_type}")
             activity = client.get_activity_streams(id, types = ["latlng", "altitude"])
 
             try:

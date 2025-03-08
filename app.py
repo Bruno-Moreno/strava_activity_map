@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 from src.strava_connection import strava_connection
 from src.download_strava_activities import download_strava_activities
 from src.read_activities_data import get_activities_data
@@ -21,5 +23,6 @@ def launch(new_activities):
 
 if __name__ == '__main__':
     
+    load_dotenv() 
     new_activities = input("Read new activities? (y/n): ")
     launch(new_activities)
