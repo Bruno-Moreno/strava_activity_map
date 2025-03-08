@@ -25,7 +25,7 @@ def download_strava_activities(client, data_path):
     read_files = get_already_read_files(data_path)
     last_date = last_activity_date(read_files)
 
-    print(f"Reading Activities After: {last_date}")
+    print(f"Reading Activities After: {last_date} \n")
     activities = client.get_activities(after=last_date)
 
     for a in activities:
@@ -37,7 +37,6 @@ def download_strava_activities(client, data_path):
         distance = f"{float(a.distance) / 1000:.2f}K"
 
         csv_name = f"{activity_name}__{start_date_str}.csv"
-        print(f"Activity: {activity_name}, Type: {activity_type}")
 
         if activity_type not in [
             "WeightTraining",
@@ -59,4 +58,4 @@ def download_strava_activities(client, data_path):
                 data_.to_csv(f"{data_path}//{csv_name}", index=False)
                 print(f"Activity: {activity_name} saved successfully")
             except KeyError:
-                print("Activity doesn't have gps data")
+                print(f"Activity {activity_name} doesn't have gps data")
