@@ -361,6 +361,45 @@ diskcache = ["diskcache (>=5.2.1)", "multiprocess (>=0.70.12)", "psutil (>=5.8.0
 testing = ["beautifulsoup4 (>=4.8.2)", "cryptography", "dash-testing-stub (>=0.0.2)", "lxml (>=4.6.2)", "multiprocess (>=0.70.12)", "percy (>=2.0.2)", "psutil (>=5.8.0)", "pytest (>=6.0.2)", "requests[security] (>=2.21.0)", "selenium (>=3.141.0,<=4.2.0)", "waitress (>=1.4.4)"]
 
 [[package]]
+name = "dash-bootstrap-components"
+version = "1.7.1"
+description = "Bootstrap themed components for use in Plotly Dash"
+optional = false
+python-versions = "<4,>=3.9"
+groups = ["main"]
+files = [
+    {file = "dash_bootstrap_components-1.7.1-py3-none-any.whl", hash = "sha256:5e8eae7ee1d013f69e272c68c1015b53ab71802460152088f33fffa90d245199"},
+    {file = "dash_bootstrap_components-1.7.1.tar.gz", hash = "sha256:30d48340d6dc89831d6c06e400cd4236f0d5363562c05b2a922f21545695a082"},
+]
+
+[package.dependencies]
+dash = ">=2.0.0"
+
+[package.extras]
+pandas = ["numpy (>=2.0.2)", "pandas (>=2.2.3)"]
+
+[[package]]
+name = "dash-bootstrap-templates"
+version = "2.1.0"
+description = "A collection of Plotly figure templates with a Bootstrap theme"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "dash_bootstrap_templates-2.1.0-py3-none-any.whl", hash = "sha256:d7a89ce5d1cfec205bff2ec621a8a6382f287eea064917909475477fb32c09d6"},
+    {file = "dash_bootstrap_templates-2.1.0.tar.gz", hash = "sha256:ca9da1060ee2b2c74dc1c26119056f37051a838a58ea07b5d325f9df7fde17fe"},
+]
+
+[package.dependencies]
+dash = "*"
+dash-bootstrap-components = ">=1.0.0"
+numpy = "*"
+plotly = ">=6,<7"
+
+[package.extras]
+dev = ["spectra", "tinycss2"]
+
+[[package]]
 name = "dash-core-components"
 version = "2.0.0"
 description = "Core component suite for Dash"
@@ -2021,5 +2060,5 @@ type = ["pytest-mypy"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.10"
-content-hash = "897c1faae0e277dff041ce4233f17767baa21df3f1cc513264a2feaf2c4d0568"
+python-versions = ">=3.10,<4"
+content-hash = "35e4b6e836fa0a72a75d866a38a5b07082e9b956815cc6a5c21de61c0bc29092"

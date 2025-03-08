@@ -1,5 +1,6 @@
-from stravalib import Client
 import os
+import webbrowser
+from stravalib import Client
 
 
 def get_strava_authorization_code():
@@ -9,8 +10,8 @@ def get_strava_authorization_code():
         redirect_uri="http://127.0.0.1:5000/authorization",
     )
     print("Enter to the link below and copy the strava code \n")
-    print(url)
-    print("\n")
+    print(f"{url} \n")
+    webbrowser.open(url)
 
 
 def get_strava_token(code):
