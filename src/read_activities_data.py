@@ -2,9 +2,7 @@ import os
 import pandas as pd
 
 
-def get_activities_data(data_path):
-    """Append all routes into a single dataframe"""
-
+def append_all_activities(data_path):
     data_files = [
         f
         for f in os.listdir(data_path)
@@ -21,5 +19,22 @@ def get_activities_data(data_path):
         df = pd.concat([df, df_], axis=0)
 
     df.sort_values(by=["date"], ascending=False, inplace=True)
+
+    return df
+
+
+def longest_ride_by_activity_type(df):
+    df["numerical_distance"] = df["distance"].str.replace("K", "").astype(float)
+    df["longest_activity"] = df["numerical_distance"] == df.groupby("activity_type")[
+        "numerical_distance"
+    ].transform("max")
+    df.drop(columns=["numerical_distance"], inplace=True)
+
+    return df
+
+
+def get_activities_data(data_path):
+    df = append_all_activities(data_path)
+    df = longest_ride_by_activity_type(df)
 
     return df

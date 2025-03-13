@@ -28,6 +28,12 @@ class StravaActivitiesApp:
                 end_date=self.activities["date"].max(),
                 display_format="YYYY-MM-DD",
             ),
+            dcc.Checklist(
+                id="checkbox-longest-activity",
+                options=[{"label": "Longest Distance", "value": "LONGEST"}],
+                value=[],  # Default is unchecked
+                inline=True,
+            ),
             dcc.Graph(id="graph-content"),
         ]
 
@@ -36,16 +42,23 @@ class StravaActivitiesApp:
             Input("dropdown-multi-selection", "value"),
             Input("date-picker", "start_date"),
             Input("date-picker", "end_date"),
+            Input("checkbox-longest-activity", "value"),
         )
-        def update_graph(activity, start_date, end_date):
+        def update_graph(activity, start_date, end_date, longest_filter):
             filter_start_date = self.activities["date"].astype(str) >= start_date
             filter_end_date = self.activities["date"].astype(str) <= end_date
             filter_activities = (
                 self.activities["activity_name_and_date"].isin(activity)
             ) | ("Select All" in activity)
+            filter_longest_activity = (self.activities["longest_activity"]) | (
+                "LONGEST" not in longest_filter
+            )
 
             df = self.activities[
-                filter_start_date & filter_end_date & filter_activities
+                filter_start_date
+                & filter_end_date
+                & filter_activities
+                & filter_longest_activity
             ].copy()
 
             fig = px.scatter_mapbox(
