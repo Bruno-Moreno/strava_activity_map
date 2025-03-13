@@ -34,7 +34,7 @@ class StravaActivitiesApp:
                 value=[],  # Default is unchecked
                 inline=True,
             ),
-            dcc.Graph(id="graph-content"),
+            dcc.Graph(id="graph-content", config={"scrollZoom": True}),
         ]
 
         @callback(
