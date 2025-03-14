@@ -9,19 +9,19 @@ data_path = "data"
 favicon = "favicon.ico"
 
 
-def launch(new_activities):
+def launch(new_activities, debug=False):
     if new_activities == "y":
         print("Reading New Activities")
         client = strava_connection()
         download_strava_activities(client, data_path)
 
     df = get_activities_data(data_path)
-    strava_app = StravaActivitiesApp(df, favicon)
+    strava_app = StravaActivitiesApp(df, favicon, debug=debug)
     strava_app.create_app()
-    strava_app.run()
+    strava_app.run_app()
 
 
 if __name__ == "__main__":
     load_dotenv()
     new_activities = input("Read new activities? (y/n): ")
-    launch(new_activities)
+    launch(new_activities, debug=False)
