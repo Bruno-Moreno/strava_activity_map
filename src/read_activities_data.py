@@ -37,4 +37,7 @@ def get_activities_data(data_path):
     df = append_all_activities(data_path)
     df = longest_ride_by_activity_type(df)
 
+    print("Saving concated activities to: all_activities.csv")
+    df.to_csv("all_activities.csv", index=False)
+
     return df
