@@ -20,4 +20,4 @@ To execute the app `poetry run python app.py`
 
 ## Others 
 
-It is possible to get GPS data overlay on a video using `gopro-overlay` library and `ffmpeg`. Execute `poetry run gopro-dashboard.py data/surf_360_2.mp4 data/surf_360_2_dashboard.mp4 --font '/Users/bmoreno/Library/Fonts/Roboto[wdth,wght].ttf'`
+It is possible to get GPS data overlay on a video using `gopro-overlay` library and `ffmpeg`. Execute `poetry run gopro-dashboard.py ~/Downloads/test.mp4 ~/Downloads/test_dashboard.mp4 --font '/Users/bmoreno/Library/Fonts/Roboto[wdth,wght].ttf' --units-speed kph`
