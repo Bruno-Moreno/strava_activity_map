@@ -17,6 +17,8 @@ dependencies = [
     "dash-bootstrap-components (>=1.7.1,<2.0.0)",
     "dash-bootstrap-templates (>=2.1.0,<3.0.0)",
     "gopro-overlay (>=0.129.0,<0.130.0)",
+    "reverse_geocoder (>=1.5.1,<2.0.0)",
+    "pycountry (>=24.6.1)",
 ]
 
 [tool.poetry]

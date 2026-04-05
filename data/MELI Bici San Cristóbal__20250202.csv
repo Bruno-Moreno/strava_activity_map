@@ -1,4 +1,4 @@
-lat,long,altitude,distance,activity_id,activity_name,activity_type
+lat,lon,altitude,distance,activity_id,activity_name,activity_type
 -33.421943,-70.609862,619.7,25.67K,13521434794,MELI Bici San Cristóbal,Ride
 -33.421987,-70.609837,619.7,25.67K,13521434794,MELI Bici San Cristóbal,Ride
 -33.421986,-70.609837,619.7,25.67K,13521434794,MELI Bici San Cristóbal,Ride

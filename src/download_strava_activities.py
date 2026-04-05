@@ -1,16 +1,12 @@
 import pandas as pd
-import os
 from datetime import datetime
+
+from src.config import ACTIVITY_TYPE_BLACKLIST
+from src.utils import list_activity_csv_files
 
 
 def get_already_read_files(data_path):
-    files = [
-        f
-        for f in os.listdir(data_path)
-        if os.path.isfile(os.path.join(data_path, f)) and f.endswith("csv")
-    ]
-
-    return files
+    return list_activity_csv_files(data_path)
 
 
 def last_activity_date(files):
@@ -38,18 +34,13 @@ def download_strava_activities(client, data_path):
 
         csv_name = f"{activity_name}__{start_date_str}.csv"
 
-        if activity_type not in [
-            "WeightTraining",
-            "Workout",
-            "VirtualRide",
-            "Treadmill",
-        ]:
+        if activity_type not in ACTIVITY_TYPE_BLACKLIST:
             activity = client.get_activity_streams(id, types=["latlng", "altitude"])
 
             try:
                 latlng = activity["latlng"].data
                 altitude = activity["altitude"].data
-                data_ = pd.DataFrame([*latlng], columns=["lat", "long"])
+                data_ = pd.DataFrame([*latlng], columns=["lat", "lon"])
                 data_["altitude"] = altitude
                 data_["distance"] = distance
                 data_["activity_id"] = id

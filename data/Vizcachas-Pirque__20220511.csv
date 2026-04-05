@@ -1,4 +1,4 @@
-lat,long,altitude,distance,activity_id,activity_name,activity_type
+lat,lon,altitude,distance,activity_id,activity_name,activity_type
 -33.593228,-70.590596,674.2,31.11K,7127674829,Vizcachas-Pirque,Ride
 -33.593234,-70.5906,674.2,31.11K,7127674829,Vizcachas-Pirque,Ride
 -33.593234,-70.5906,674.2,31.11K,7127674829,Vizcachas-Pirque,Ride

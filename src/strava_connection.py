@@ -40,7 +40,7 @@ def strava_login(token_response):
 
 def strava_connection():
     get_strava_authorization_code()
-    code = input("Insert Autorization Code: ")
+    code = input("Insert Authorization Code: ")
     token_response = get_strava_token(code)
     client = strava_login(token_response)
 

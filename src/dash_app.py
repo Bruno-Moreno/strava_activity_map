@@ -1,9 +1,30 @@
 import webbrowser
+import pycountry
 import plotly.express as px
 import dash_bootstrap_components as dbc
 from threading import Timer
 from dash_bootstrap_templates import load_figure_template
 from dash import Dash, html, dcc, callback, Output, Input
+
+from src import config
+from src.styles import (
+    CARD_STYLE,
+    CHECKBOX_STYLE,
+    CONTAINER_STYLE,
+    DATE_PICKER_STYLE,
+    DROPDOWN_STYLE,
+    GRAPH_STYLE,
+    HEADER_STYLE,
+)
+
+
+def _country_flag(cc: str) -> str:
+    return "".join(chr(0x1F1E6 + ord(c) - ord("A")) for c in cc.upper())
+
+
+def _country_name(cc: str) -> str:
+    country = pycountry.countries.get(alpha_2=cc)
+    return country.name if country else cc
 
 
 class StravaActivitiesApp:
@@ -16,71 +37,30 @@ class StravaActivitiesApp:
         self.debug = debug
         load_figure_template("COSMO")
 
-    def create_app(self):
-        # Enhanced styling with better layout and visual appeal
-        header_style = {
-            "textAlign": "center",
-            "color": "#2c3e50",
-            "fontSize": "2.5rem",
-            "fontWeight": "bold",
-            "marginBottom": "2rem",
-            "paddingTop": "1rem",
-            "textShadow": "2px 2px 4px rgba(0,0,0,0.1)",
-        }
+    def _apply_filters(self, df, activity, start_date, end_date, longest_filter):
+        filter_start_date = df["date"].astype(str) >= start_date
+        filter_end_date = df["date"].astype(str) <= end_date
+        filter_activities = (df["activity_name_and_date"].isin(activity)) | (
+            "Select All" in activity
+        )
+        filter_longest_activity = (df["longest_activity"]) | (
+            "LONGEST" not in longest_filter
+        )
+        return df[
+            filter_start_date
+            & filter_end_date
+            & filter_activities
+            & filter_longest_activity
+        ].copy()
 
-        container_style = {
-            "width": "100%",
-            "margin": "0",
-            "padding": "2rem",
-            "backgroundColor": "#f8f9fa",
-            "minHeight": "100vh",
-        }
-
-        card_style = {
-            "backgroundColor": "white",
-            "borderRadius": "12px",
-            "boxShadow": "0 4px 6px rgba(0,0,0,0.1)",
-            "padding": "1.5rem",
-            "marginBottom": "1.5rem",
-            "border": "1px solid #e9ecef",
-        }
-
-        dropdown_style = {
-            "paddingLeft": "20px",
-            "paddingRight": "20px",
-            "marginBottom": "1rem",
-        }
-
-        date_picker_style = {
-            "paddingLeft": "20px",
-            "paddingRight": "20px",
-            "paddingTop": "10px",
-            "marginBottom": "1rem",
-        }
-
-        checkbox_style = {
-            "paddingLeft": "20px",
-            "paddingRight": "20px",
-            "paddingTop": "10px",
-            "marginBottom": "1.5rem",
-        }
-
-        graph_style = {
-            "borderRadius": "8px",
-            "boxShadow": "0 2px 4px rgba(0,0,0,0.1)",
-            "backgroundColor": "white",
-            "width": "100%",
-            "height": "100%",
-            "overflow": "hidden",
-        }
-
-        self.app.layout = dbc.Container(
+    def _build_layout(self):
+        return dbc.Container(
             [
                 # Header
                 html.Div(
                     [
                         html.H1(
-                            children="🏃‍♂️ Strava Activities Map", style=header_style
+                            children="🏃‍♂️ Strava Activities Map", style=HEADER_STYLE
                         ),
                         html.Hr(
                             style={"borderColor": "#dee2e6", "marginBottom": "2rem"}
@@ -125,7 +105,7 @@ class StravaActivitiesApp:
                                             ),
                                             value=["Select All"],
                                             multi=True,
-                                            style=dropdown_style,
+                                            style=DROPDOWN_STYLE,
                                             className="mb-3",
                                         ),
                                     ]
@@ -146,7 +126,7 @@ class StravaActivitiesApp:
                                             start_date=self.activities["date"].min(),
                                             end_date=self.activities["date"].max(),
                                             display_format="YYYY-MM-DD",
-                                            style=date_picker_style,
+                                            style=DATE_PICKER_STYLE,
                                             className="mb-3",
                                         ),
                                     ]
@@ -172,14 +152,43 @@ class StravaActivitiesApp:
                                             ],
                                             value=[],
                                             inline=True,
-                                            style=checkbox_style,
+                                            style=CHECKBOX_STYLE,
                                         ),
                                     ]
                                 ),
                             ]
                         ),
                     ],
-                    style=card_style,
+                    style=CARD_STYLE,
+                ),
+                # Visited Countries Card
+                dbc.Card(
+                    [
+                        dbc.CardHeader(
+                            html.H4(
+                                "🌍 Visited Countries",
+                                style={"margin": "0", "color": "#495057"},
+                            ),
+                            style={
+                                "backgroundColor": "#e9ecef",
+                                "borderRadius": "8px 8px 0 0",
+                            },
+                        ),
+                        dbc.CardBody(
+                            [
+                                html.Div(
+                                    id="countries-summary",
+                                    style={
+                                        "fontWeight": "bold",
+                                        "marginBottom": "0.5rem",
+                                        "color": "#495057",
+                                    },
+                                ),
+                                html.Div(id="countries-list"),
+                            ]
+                        ),
+                    ],
+                    style=CARD_STYLE,
                 ),
                 # Map Card
                 dbc.Card(
@@ -201,19 +210,20 @@ class StravaActivitiesApp:
                                 dcc.Graph(
                                     id="graph-content",
                                     config={"scrollZoom": True},
-                                    style=graph_style,
+                                    style=GRAPH_STYLE,
                                 )
                             ]
                         ),
                     ],
-                    style=card_style,
+                    style=CARD_STYLE,
                 ),
             ],
             fluid=True,
-            style=container_style,
+            style=CONTAINER_STYLE,
             className="px-0",
         )
 
+    def _register_callbacks(self):
         @callback(
             Output("graph-content", "figure"),
             Input("dropdown-multi-selection", "value"),
@@ -222,39 +232,21 @@ class StravaActivitiesApp:
             Input("checkbox-longest-activity", "value"),
         )
         def update_graph(activity, start_date, end_date, longest_filter):
-            filter_start_date = self.activities["date"].astype(str) >= start_date
-            filter_end_date = self.activities["date"].astype(str) <= end_date
-            filter_activities = (
-                self.activities["activity_name_and_date"].isin(activity)
-            ) | ("Select All" in activity)
-            filter_longest_activity = (self.activities["longest_activity"]) | (
-                "LONGEST" not in longest_filter
+            df = self._apply_filters(
+                self.activities, activity, start_date, end_date, longest_filter
             )
-
-            df = self.activities[
-                filter_start_date
-                & filter_end_date
-                & filter_activities
-                & filter_longest_activity
-            ].copy()
 
             fig = px.scatter_mapbox(
                 df,
                 lat="lat",
-                lon="long",
+                lon="lon",
                 hover_data=["activity_name", "date", "distance"],
                 zoom=8,
                 color="activity_type",
-                center={"lat": -33.55, "lon": -70.60},
+                center=config.MAP_CENTER,
                 width=None,
                 height=600,
-                color_discrete_map={
-                    "Run": "#ff6b6b",
-                    "Ride": "#4ecdc4",
-                    "Walk": "#45b7d1",
-                    "Hike": "#96ceb4",
-                    "Swim": "#feca57",
-                },
+                color_discrete_map=config.ACTIVITY_COLOR_MAP,
             )
             fig.update_layout(
                 mapbox_style="open-street-map",
@@ -271,8 +263,6 @@ class StravaActivitiesApp:
                 autosize=True,
                 height=600,
             )
-
-            # Enhanced hover template
             fig.update_traces(
                 hovertemplate="<b>%{customdata[0]}</b><br>"
                 + "Date: %{customdata[1]}<br>"
@@ -282,6 +272,37 @@ class StravaActivitiesApp:
             )
 
             return fig
+
+        @callback(
+            Output("countries-summary", "children"),
+            Output("countries-list", "children"),
+            Input("dropdown-multi-selection", "value"),
+            Input("date-picker", "start_date"),
+            Input("date-picker", "end_date"),
+            Input("checkbox-longest-activity", "value"),
+        )
+        def update_countries(activity, start_date, end_date, longest_filter):
+            df = self._apply_filters(
+                self.activities, activity, start_date, end_date, longest_filter
+            )
+            unique_countries = sorted(df["country"].dropna().unique())
+            count = len(unique_countries)
+            summary = f"{count} {'country' if count == 1 else 'countries'} visited"
+            badges = [
+                dbc.Badge(
+                    f"{_country_flag(cc)} {_country_name(cc)}",
+                    color="light",
+                    text_color="dark",
+                    className="me-1 mb-1",
+                    style={"fontSize": "0.85rem"},
+                )
+                for cc in unique_countries
+            ]
+            return summary, badges
+
+    def create_app(self):
+        self.app.layout = self._build_layout()
+        self._register_callbacks()
 
     def _open_browser(self):
         if not self.debug:
