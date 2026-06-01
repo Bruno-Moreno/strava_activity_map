@@ -1,28 +1,16 @@
+from datetime import datetime, timedelta, timezone
+
 import pandas as pd
-from datetime import datetime
 
 from src.config import ACTIVITY_TYPE_BLACKLIST
-from src.utils import list_activity_csv_files
+from src.strava_listing import list_activities
 
 
-def get_already_read_files(data_path):
-    return list_activity_csv_files(data_path)
+def download_strava_activities(client, data_path, days: int) -> None:
+    after = datetime.now(timezone.utc) - timedelta(days=days)
 
-
-def last_activity_date(files):
-    dates_str = [d.split("__")[-1].split(".")[0] for d in files]
-    dates = [datetime.strptime(d, "%Y%m%d") for d in dates_str]
-    last_date = max(dates)
-
-    return last_date
-
-
-def download_strava_activities(client, data_path):
-    read_files = get_already_read_files(data_path)
-    last_date = last_activity_date(read_files)
-
-    print(f"Reading Activities After: {last_date} \n")
-    activities = client.get_activities(after=last_date)
+    print(f"Reading Activities After: {after.isoformat()} \n")
+    activities = list_activities(client, after=after)
 
     for a in activities:
         id = a.id

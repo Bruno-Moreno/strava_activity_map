@@ -171,3 +171,6 @@ cython_debug/
 
 # Strava token
 .strava_token.json
+
+# Telegram alert state
+.alert_state.json

@@ -1,10 +1,11 @@
 import webbrowser
-import pycountry
-import plotly.express as px
-import dash_bootstrap_components as dbc
 from threading import Timer
+
+import dash_bootstrap_components as dbc
+import plotly.express as px
+import pycountry
+from dash import Dash, Input, Output, callback, dcc, html
 from dash_bootstrap_templates import load_figure_template
-from dash import Dash, html, dcc, callback, Output, Input
 
 from src import config
 from src.styles import (
@@ -16,6 +17,7 @@ from src.styles import (
     GRAPH_STYLE,
     HEADER_STYLE,
 )
+from src.training_log.layout import build_training_log_tab
 
 
 def _country_flag(cc: str) -> str:
@@ -28,8 +30,9 @@ def _country_name(cc: str) -> str:
 
 
 class StravaActivitiesApp:
-    def __init__(self, activities, favicon, debug, port="8050"):
+    def __init__(self, activities, training_log, favicon, debug, port="8050"):
         self.activities = activities
+        self.training_log = training_log
         self.app = Dash(external_stylesheets=[dbc.themes.COSMO])
         self.app.title = "Strava Activities"
         self.app._favicon = favicon
@@ -53,20 +56,9 @@ class StravaActivitiesApp:
             & filter_longest_activity
         ].copy()
 
-    def _build_layout(self):
-        return dbc.Container(
+    def _build_map_tab(self):
+        return html.Div(
             [
-                # Header
-                html.Div(
-                    [
-                        html.H1(
-                            children="🏃‍♂️ Strava Activities Map", style=HEADER_STYLE
-                        ),
-                        html.Hr(
-                            style={"borderColor": "#dee2e6", "marginBottom": "2rem"}
-                        ),
-                    ]
-                ),
                 # Controls Card
                 dbc.Card(
                     [
@@ -216,6 +208,38 @@ class StravaActivitiesApp:
                         ),
                     ],
                     style=CARD_STYLE,
+                ),
+            ]
+        )
+
+    def _build_layout(self):
+        return dbc.Container(
+            [
+                # Header
+                html.Div(
+                    [
+                        html.H1(children="🏃‍♂️ Strava Activities", style=HEADER_STYLE),
+                        html.Hr(
+                            style={"borderColor": "#dee2e6", "marginBottom": "2rem"}
+                        ),
+                    ]
+                ),
+                dcc.Tabs(
+                    id="main-tabs",
+                    value="tab-map",
+                    children=[
+                        dcc.Tab(
+                            label="Activity Map",
+                            value="tab-map",
+                            children=self._build_map_tab(),
+                        ),
+                        dcc.Tab(
+                            label="Training Log",
+                            value="tab-log",
+                            children=build_training_log_tab(self.training_log),
+                        ),
+                    ],
+                    className="mb-3",
                 ),
             ],
             fluid=True,
