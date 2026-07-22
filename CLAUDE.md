@@ -27,9 +27,6 @@ poetry run ruff format .
 
 # Install pre-commit hooks
 pre-commit install
-
-# GoPro video overlay
-poetry run gopro-dashboard.py ~/Downloads/test.mp4 ~/Downloads/test_dashboard.mp4 --font '/Users/bmoreno/Library/Fonts/Roboto[wdth,wght].ttf' --units-speed kph
 ```
 
 **Requirements**: A `.env` file with:

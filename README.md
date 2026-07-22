@@ -9,7 +9,6 @@ Plotly Dash web app that fetches GPS activity data from the Strava API and displ
 - Interactive map of GPS activities (Run, Ride, Walk, Hike, Swim, Snowboard, and more)
 - Filter by activity name, date range, or show only the longest distance per activity type
 - Visited Countries panel with flag display
-- GoPro video GPS overlay support via `gopro-overlay`
 
 ## Requirements
 
@@ -52,16 +51,6 @@ data/                           # Per-activity CSV files ({name}__{YYYYMMDD}.csv
 
 Filtered activity types (not downloaded): `WeightTraining`, `Workout`, `VirtualRide`, `Treadmill`.
 
-## GoPro Video Overlay
-
-```bash
-poetry run gopro-dashboard.py ~/Downloads/test.mp4 ~/Downloads/test_dashboard.mp4 \
-  --font '/Users/bmoreno/Library/Fonts/Roboto[wdth,wght].ttf' \
-  --units-speed kph
-```
-
-Requires `ffmpeg` installed on the system.
-
 ## Dependencies
 
 | Package | Version |
@@ -71,6 +60,5 @@ Requires `ffmpeg` installed on the system.
 | plotly | ^6.0 |
 | stravalib | ^2.2 |
 | dash-bootstrap-components | ^1.7 |
-| gopro-overlay | ^0.129 |
 | reverse_geocoder | ^1.5 |
 | pycountry | ^24.6 |
